@@ -1,29 +1,32 @@
 {
-  "name": "bloumechat-bot-exemple",
-  "version": "1.0.0",
-  "description": "Exemple de bot modulaire pour BloumeChat utilisant le SDK bloumechat.js",
-  "main": "index.ts",
-  "scripts": {
-    "start": "tsx index.ts",
-    "dev": "tsx watch index.ts"
-  },
-  "dependencies": {
-    "bloumechat": "^1.0.17",
-    "dotenv": "^17.3.1",
-    "fs": "^0.0.1-security",
-    "path": "^0.12.7"
-  },
-  "devDependencies": {
-    "@types/node": "^25.3.5",
-    "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
-  },
-  "keywords": [
-    "bloumechat",
-    "bot",
-    "sdk",
-    "example"
-  ],
-  "author": "BloumeChat Team",
-  "license": "MIT"
+    "name": "bloumechat-bot-exemple",
+    "version": "2.0.0",
+    "description": "Template de bot BloumeChat — TypeScript strict, commandes modulaires, cooldowns, automod",
+    "main": "index.ts",
+    "scripts": {
+        "start": "tsx index.ts",
+        "dev": "tsx watch index.ts",
+        "build": "tsc",
+        "start:prod": "node dist/index.js"
+    },
+    "dependencies": {
+        "bloumechat": "^1.0.17",
+        "dotenv": "^17.3.1"
+    },
+    "devDependencies": {
+        "@types/node": "^25.3.5",
+        "tsx": "^4.7.1",
+        "typescript": "^5.3.3"
+    },
+    "keywords": [
+        "bloumechat",
+        "bot",
+        "sdk",
+        "template"
+    ],
+    "author": "BloumeChat Team",
+    "license": "MIT",
+    "engines": {
+        "node": ">=18.0.0"
+    }
 }

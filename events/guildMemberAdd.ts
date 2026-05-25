@@ -1,40 +1,48 @@
-import { BloumeChat, EmbedBuilder } from "bloumechat";
-import { SettingsManager } from "../util/settings";
+import type { BloumeChat } from "bloumechat";
+import { EmbedBuilder } from "bloumechat";
+import type { BotEvent } from "../types";
+import { logger } from "../util/logger";
 
-export default {
+const event: BotEvent = {
     name: "guildMemberAdd",
     async execute(client: BloumeChat, data: any) {
-        const serverId = data.serverPublicId || data.serverId;
-        const settings = SettingsManager.get(serverId);
+        const guildId: string = data.serverPublicId ?? data.serverId;
+        const guild = client.guilds.cache.get(guildId);
+        if (!guild) return;
 
-        if (!settings.welcomeChannelId) return;
+        const user = data.user ?? data;
+        const username: string = user.name ?? user.username ?? "Nouvel utilisateur";
+        const userId: string   = user.publicId ?? user.id ?? "";
 
-        try {
-            const channel = await client.channels.fetch(settings.welcomeChannelId);
-            if (!channel) return;
+        logger.info(`${username} joined ${guild.name}`);
 
-            const user = data.user || data;
-            const username = user.username || "Nouvel utilisateur";
-            const avatarUrl = user.avatar || "https://bloumechat.com/logo.png";
-            const guild = client.guilds.cache.get(serverId);
+        // Try to find the first text channel in the guild
+        await guild.fetchChannels().catch(() => {});
+        const channel = client.channels.cache.find(
+            c => c.serverId === guild.id && c.type === "TEXT"
+        );
+        if (!channel) return;
 
-            const embed = new EmbedBuilder()
-                .setTitle(`👋 Bienvenue sur ${guild?.name || "le serveur"} !`)
-                .setDescription(`Heureux de te voir parmi nous, **${username}** !`)
-                .setColor("#2ECC71")
-                .setThumbnail(avatarUrl)
-                .addFields(
-                    { name: "👤 Utilisateur", value: `<@${user.publicId || user.id}>`, inline: true },
-                    { name: "🔢 Total Membres", value: `${guild?.memberCount || "???"}`, inline: true }
-                )
-                .setImage("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Y2bmZ4ZzB4bmZ4ZzB4bmZ4ZzB4bmZ4ZzB4bmZ4ZzB4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/vFKqnCdLPNOKc/giphy.gif")
-                .setFooter({ text: "BloumeChat Welcome System" })
-                .setTimestamp();
+        const embed = new EmbedBuilder()
+            .setTitle(`👋 Bienvenue sur ${guild.name} !`)
+            .setDescription(
+                `Bienvenue ${userId ? `<@${userId}>` : `**${username}**`} !\nNous sommes ravis de vous accueillir.`
+            )
+            .addFields(
+                { name: "👤 Membre", value: userId ? `<@${userId}>` : username, inline: true },
+                { name: "🔢 Membres", value: `${(guild as any).memberCount ?? "?"}`, inline: true }
+            )
+            .setColor("#2ECC71")
+            .setTimestamp();
 
-            await (channel as any).send(`<@${user.publicId || user.id}>`, [embed]);
-            console.log(`[Welcome] Greeted ${username} in server ${serverId}`);
-        } catch (e) {
-            console.error("[Welcome Error]", e);
+        if (user.image ?? user.avatar) {
+            embed.setThumbnail(user.image ?? user.avatar);
         }
-    }
+
+        await client.sendMessage(channel.id, { embeds: [embed] }).catch((err) => {
+            logger.error(`Failed to send welcome message in ${guild.name}:`, err);
+        });
+    },
 };
+
+export default event;

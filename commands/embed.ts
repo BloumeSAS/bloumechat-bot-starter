@@ -1,28 +1,44 @@
+import type { Command, CommandContext } from "../types";
 import { EmbedBuilder } from "bloumechat";
-import { Command } from "../types";
 
-/**
- * Command to send an embed message.
- * @param client - The BloumeChat client instance.
- * @param message - The message object.
- * @param args - The arguments passed to the command.
- */
-export const command: Command = {
+const command: Command = {
     name: "embed",
-    description: "Sends a stunning Embed element.",
-    async execute(client, message, args) {
-        console.log("➡️ Sending an embed message");
+    description: "Envoie un message embed personnalisé.",
+    aliases: ["e"],
+    usage: "<titre> | <description> [| #couleur]",
+    examples: [
+        "embed Annonce | Nouvelle fonctionnalité disponible !",
+        "embed 🎉 Événement | Rejoignez-nous ce soir à 20h | #FF5733",
+    ],
+    cooldown: 10,
+    guildOnly: true,
+    async execute({ client, message, args }: CommandContext) {
+        const raw   = args.join(" ");
+        const parts = raw.split("|").map(s => s.trim());
+
+        if (parts.length < 2 || !parts[0] || !parts[1]) {
+            await message.reply(
+                "❌ Usage : `!embed Titre | Description [| #couleur]`\n" +
+                "Exemple : `!embed Annonce | Nouvelle fonctionnalité | #5865F2`"
+            );
+            return;
+        }
+
+        const [title, description, colorArg] = parts;
+        const color = /^#[0-9A-Fa-f]{6}$/.test(colorArg ?? "") ? colorArg : "#5865F2";
+
         const embed = new EmbedBuilder()
-            .setTitle("✨ BloumeChat SDK Embed")
-            .setDescription("This is a demonstration of the new `EmbedBuilder` structure replicating Discord's functionality!")
-            .setColor("#5865F2")
-            // @ts-ignore
-            .setAuthor({ name: client.user?.username || "Bot", iconUrl: client.user?.image || undefined })
-            .addFields({ name: "Version", value: "1.0.0", inline: true })
-            .addFields({ name: "Ping", value: "Available", inline: true })
-            .setFooter({ text: "Powered by BloumeChat" })
+            .setTitle(title.substring(0, 256))
+            .setDescription(description.substring(0, 4_096))
+            .setColor(color)
+            .setFooter({ text: `Envoyé par ${message.author.username}` })
             .setTimestamp();
 
-        await message.channel.send({ content: "Here is your embed:", embeds: [embed] });
-    }
+        await message.reply({ embeds: [embed] });
+
+        // Delete the original command message to keep the chat clean
+        await message.delete().catch(() => {});
+    },
 };
+
+export default command;

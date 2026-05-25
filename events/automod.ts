@@ -1,63 +1,86 @@
-import { BloumeChat, Message, EmbedBuilder } from "bloumechat";
+import type { BloumeChat, Message } from "bloumechat";
+import type { BotEvent } from "../types";
+import { EmbedBuilder } from "bloumechat";
+import { logger } from "../util/logger";
 
-/**
- * Automod System
- * Scans messages for blacklisted words, link spam, etc.
- */
-export default {
-    name: "messageCreate",
-    async execute(client: BloumeChat, message: Message) {
-        // Ignore bots to prevent loops
-        if (message.author.bot) return;
+// ── Configuration ──────────────────────────────────────────────────────────────
+/** Words that will get the message deleted */
+const BLACKLIST: string[] = [
+    // Add words to moderate here, e.g.: "spam", "scam"
+];
 
-        const content = message.content.toLowerCase();
-        
-        // 1. Blacklisted words (Example list)
-        const blacklist = ["scam", "hack", "nitro-free", "discord-gift", "insulte1", "insulte2"];
-        const hasBlacklistedWord = blacklist.some(word => content.includes(word));
+/** Regex for external links (bloumechat.com is whitelisted) */
+const LINK_RE = /https?:\/\/(?!(?:www\.)?bloumechat\.com)[^\s]+/gi;
 
-        // 2. Link filter (Prevent external ads)
-        const hasLink = /(https?:\/\/[^\s]+)/g.test(content);
-        
-        // 3. Caps abuse (More than 70% caps and at least 10 chars)
-        const capsCount = message.content.replace(/[^A-Z]/g, "").length;
-        const isCapsAbuse = message.content.length > 10 && (capsCount / message.content.length) > 0.7;
+/** Minimum message length before caps check fires */
+const CAPS_MIN_LEN = 20;
+/** Ratio of uppercase letters above which a message is considered caps abuse */
+const CAPS_THRESHOLD = 0.7;
 
-        let violation = "";
-        if (hasBlacklistedWord) violation = "Mot interdit détecté";
-        else if (hasLink) violation = "Lien externe non autorisé";
-        else if (isCapsAbuse) violation = "Abus de MAJUSCULES";
+// ── Helper ─────────────────────────────────────────────────────────────────────
+function detectViolation(content: string): string | null {
+    const lc = content.toLowerCase();
 
-        if (violation) {
-            try {
-                // Delete the message
-                await message.delete();
+    if (BLACKLIST.length && BLACKLIST.some(w => lc.includes(w))) {
+        return "Mot interdit détecté";
+    }
 
-                // Send an AutoMod alert
-                const embed = new EmbedBuilder()
-                    .setTitle("🛡️ Auto-Modération")
-                    .setDescription(`Le message de <@${message.author.id}> a été supprimé.`)
-                    .setColor("#FF0000")
-                    .addFields(
-                        { name: "👤 Utilisateur", value: message.author.username, inline: true },
-                        { name: "🚫 Raison", value: violation, inline: true }
-                    )
-                    .setFooter({ text: "Ce message s'auto-détruira dans 10 secondes." })
-                    .setTimestamp();
+    LINK_RE.lastIndex = 0;
+    if (LINK_RE.test(content)) {
+        return "Lien externe non autorisé";
+    }
 
-                const warning = await message.channel.send("", [embed]);
-
-                // Auto-delete the warning after 10 seconds to keep the chat clean
-                if (warning) {
-                    setTimeout(async () => {
-                        try { await warning.delete(); } catch (e) {}
-                    }, 10000);
-                }
-
-                console.log(`[AutoMod] Deleted message from ${message.author.username}: ${violation}`);
-            } catch (e) {
-                console.error("[AutoMod] Failed to delete message or send warning:", e);
-            }
+    if (content.length >= CAPS_MIN_LEN) {
+        const letters = (content.match(/[A-Za-z]/g) ?? []).length;
+        const upper   = (content.match(/[A-Z]/g) ?? []).length;
+        if (letters > 0 && upper / letters > CAPS_THRESHOLD) {
+            return "Abus de majuscules";
         }
     }
+
+    return null;
+}
+
+// ── Event ──────────────────────────────────────────────────────────────────────
+const event: BotEvent<[Message]> = {
+    name: "messageCreate",
+    async execute(_client: BloumeChat, message: Message) {
+        // Skip bots and DMs
+        if (message.author.bot || !message.serverId) return;
+
+        const violation = detectViolation(message.content);
+        if (!violation) return;
+
+        logger.warn(`Automod [${violation}] — ${message.author.username} in ${message.serverId}`);
+
+        try {
+            await message.delete();
+        } catch {
+            // Missing permissions — skip deletion, still warn
+        }
+
+        try {
+            const embed = new EmbedBuilder()
+                .setTitle("🛡️ Auto-Modération")
+                .setDescription(`Le message de <@${message.author.id}> a été supprimé.`)
+                .setColor("#FF0000")
+                .addFields(
+                    { name: "👤 Utilisateur", value: message.author.username, inline: true },
+                    { name: "🚫 Raison",       value: violation,              inline: true }
+                )
+                .setFooter({ text: "Ce message s'auto-détruira dans 10 secondes." })
+                .setTimestamp();
+
+            const warning = await message.channel.send({ embeds: [embed] });
+
+            // Auto-delete warning after 10 s
+            setTimeout(async () => {
+                await warning.delete().catch(() => {});
+            }, 10_000);
+        } catch (err) {
+            logger.error("Automod: failed to send warning embed:", err);
+        }
+    },
 };
+
+export default event;

@@ -1,23 +1,26 @@
-import { Command } from "../types";
+import type { Command, CommandContext } from "../types";
 
-export const command: Command = {
+const command: Command = {
     name: "say",
-    description: "Fait répéter un message au bot.",
-    async execute(client, message, args) {
-        const text = args.join(" ");
-
-        if (!text) {
-            return message.reply("❌ Veuillez indiquer le texte que je dois répéter. Exemple : `!say Bonjour tout le monde`.");
+    description: "Fait répéter un message au bot dans le canal actuel.",
+    aliases: ["echo", "repeat"],
+    usage: "<message>",
+    examples: ["say Bonjour tout le monde !", "say @everyone Réunion dans 5 minutes !"],
+    cooldown: 5,
+    guildOnly: false,
+    async execute({ client, message, args }: CommandContext) {
+        if (args.length === 0) {
+            await message.reply("❌ Veuillez entrer un message. Exemple : `!say Bonjour !`");
+            return;
         }
 
-        // On supprime le message d'origine si on a les droits
-        try {
-            await message.delete();
-        } catch (e) {
-            // Ignore si on a pas la permission
-        }
+        const text = args.join(" ").substring(0, 2_000);
 
-        // Le bot envoie le message texte
-        await message.channel.send(text);
-    }
+        // Delete the original command to keep things clean
+        await message.delete().catch(() => {});
+
+        await client.sendMessage(message.channelId, text);
+    },
 };
+
+export default command;

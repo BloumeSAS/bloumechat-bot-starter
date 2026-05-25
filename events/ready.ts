@@ -1,26 +1,19 @@
-import { BloumeChat } from "bloumechat";
+import type { BloumeChat } from "bloumechat";
+import type { BotEvent } from "../types";
+import { logger } from "../util/logger";
 
-/**
- * Event handler for the 'ready' event.
- * This event is triggered when the bot has successfully connected to BloumeChat.
- *
- * @export
- * @default
- * @type {object}
- * @property {string} name - The name of the event.
- * @property {boolean} once - Whether the event should only be executed once.
- * @property {function(BloumeChat): Promise<void>} execute - The function to execute when the event is triggered.
- */
-export default {
+const event: BotEvent = {
     name: "ready",
     once: true,
     async execute(client: BloumeChat) {
-        console.log("-----------------------------------------");
-        console.log(`🚀 Bot connected as: ${client.user?.username}#${client.user?.tag}`);
-        console.log(`🌐 Total Servers: ${client.guilds.cache.size}`);
-        console.log("-----------------------------------------");
+        logger.success(`Connected as ${client.user?.username}#${client.user?.tag}`);
+        logger.info(`Serving ${client.guilds.cache.size} server(s)`);
 
-        console.log("⚙️ Setting status to 'dnd' (Do Not Disturb)...");
-        await client.setStatus("dnd");
-    }
+        await client.setStatus("online").catch(() => { /* non-fatal */ });
+
+        // Once the SDK >= 2.0 is published, you can use:
+        // await client.setActivity({ type: "using", name: "BloumeChat" })
+    },
 };
+
+export default event;

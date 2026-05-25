@@ -1,37 +1,57 @@
-import { Command } from "../types";
+import type { Command, CommandContext } from "../types";
+import { EmbedBuilder } from "bloumechat";
 
-/**
- * Command to create a poll and wait for reactions.
- * @param client - The BloumeChat client instance.
- * @param message - The message object.
- * @param args - The arguments passed to the command.
- */
-export const command: Command = {
+const EMOJIS = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
+
+const command: Command = {
     name: "poll",
-    description: "Creates a yes/no poll and waits for reactions.",
-    async execute(client, message, args) {
-        const question = args.join(" ");
-        if (!question) return message.reply("❌ Usage: `!poll [question]`");
+    description: "Crée un sondage avec une question et jusqu'à 10 options.",
+    aliases: ["sondage", "vote"],
+    usage: "<question> | <option1> | <option2> [| option3...]",
+    examples: [
+        "poll Meilleure couleur ? | Rouge | Bleu | Vert",
+        "poll Soirée ce soir ? | Oui 🎉 | Non 😴",
+    ],
+    cooldown: 30,
+    guildOnly: true,
+    async execute({ message, args }: CommandContext) {
+        const raw   = args.join(" ");
+        const parts = raw.split("|").map(s => s.trim()).filter(Boolean);
 
-        try {
-            const pollMsg = await message.reply(`📊 **POLL:** ${question}`);
-            await pollMsg.react("👍");
-            await pollMsg.react("👎");
-
-            await message.reply(`⏳ Poll started! Waiting 10 seconds for reactions...`);
-
-            // Wait for reactions (or 10 seconds timeout)
-            await pollMsg.awaitReactions({ time: 10000 });
-
-            const upvotes = await pollMsg.fetchReactions("👍");
-            const downvotes = await pollMsg.fetchReactions("👎");
-
-            await message.reply(`📊 Results for "${question}":\n👍: ${upvotes.length}\n👎: ${downvotes.length}`);
-
-            // Cleanup
-            await pollMsg.clearReactions();
-        } catch (e: any) {
-            await message.reply(`❌ Error: ${e.message}`);
+        if (parts.length < 3) {
+            await message.reply(
+                "❌ Usage : `!poll Question ? | Option A | Option B [| Option C...]`\n" +
+                "Minimum 2 options requises."
+            );
+            return;
         }
-    }
+
+        const [question, ...options] = parts;
+
+        if (options.length > 10) {
+            await message.reply("❌ Maximum **10 options** par sondage.");
+            return;
+        }
+
+        const embed = new EmbedBuilder()
+            .setTitle(`📊 ${question}`)
+            .setDescription(
+                options.map((opt, i) => `${EMOJIS[i]} **${opt}**`).join("\n\n")
+            )
+            .setColor("#5865F2")
+            .setFooter({ text: `Sondage créé par ${message.author.username}` })
+            .setTimestamp();
+
+        const pollMsg = await message.channel.send({ embeds: [embed] });
+
+        // Add reactions as voting buttons
+        for (let i = 0; i < options.length; i++) {
+            await pollMsg.react(EMOJIS[i]).catch(() => {});
+        }
+
+        // Delete the command trigger to keep the channel clean
+        await message.delete().catch(() => {});
+    },
 };
+
+export default command;

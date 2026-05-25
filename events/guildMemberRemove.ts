@@ -1,32 +1,18 @@
-import { BloumeChat, EmbedBuilder } from "bloumechat";
-import { SettingsManager } from "../util/settings";
+import type { BloumeChat } from "bloumechat";
+import type { BotEvent } from "../types";
+import { logger } from "../util/logger";
 
-export default {
+const event: BotEvent = {
     name: "guildMemberRemove",
     async execute(client: BloumeChat, data: any) {
-        const serverId = data.serverPublicId || data.serverId;
-        const settings = SettingsManager.get(serverId);
+        const guildId: string = data.serverPublicId ?? data.serverId;
+        const guild = client.guilds.cache.get(guildId);
 
-        if (!settings.leaveChannelId) return;
+        const user = data.user ?? data;
+        const username: string = user.name ?? user.username ?? "Inconnu";
 
-        try {
-            const channel = await client.channels.fetch(settings.leaveChannelId);
-            if (!channel) return;
-
-            const user = data.user || data;
-            const username = user.username || "Un utilisateur";
-
-            const embed = new EmbedBuilder()
-                .setTitle("💔 Un membre nous a quitté")
-                .setDescription(`Bonne route à **${username}**... Tu vas nous manquer !`)
-                .setColor("#E74C3C")
-                .setFooter({ text: "BloumeChat Leave Log" })
-                .setTimestamp();
-
-            await (channel as any).send("", [embed]);
-            console.log(`[Leave] Logged exit for ${username} in server ${serverId}`);
-        } catch (e) {
-            console.error("[Leave Error]", e);
-        }
-    }
+        logger.info(`${username} left ${guild?.name ?? guildId}`);
+    },
 };
+
+export default event;

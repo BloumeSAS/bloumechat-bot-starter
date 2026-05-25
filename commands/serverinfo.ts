@@ -1,30 +1,40 @@
-import { Command } from "../types";
+import type { Command, CommandContext } from "../types";
 import { EmbedBuilder } from "bloumechat";
 
-export const command: Command = {
+const command: Command = {
     name: "serverinfo",
-    description: "Affiche les informations du serveur.",
-    async execute(client, message, args) {
-        // Si la commande n'est pas lancée sur un serveur, on annule
-        if (!message.guild) {
-            return message.reply("❌ Cette commande doit être utilisée sur un serveur.");
+    description: "Affiche les informations du serveur actuel.",
+    aliases: ["guildinfo", "si", "server"],
+    cooldown: 10,
+    guildOnly: true,
+    async execute({ client, message }: CommandContext) {
+        if (!message.serverId) return;
+
+        const guild = client.guilds.cache.get(message.serverId);
+        if (!guild) {
+            await message.reply("❌ Impossible de récupérer les informations du serveur.");
+            return;
         }
+
+        // Refresh channel count
+        await guild.fetchChannels().catch(() => {});
+        const channelCount = client.channels.cache.filter(c => c.serverId === guild.id).size;
 
         const embed = new EmbedBuilder()
-            .setTitle(`ℹ️ Infos du Serveur : ${message.guild.name}`)
-            .setDescription(`Voici les informations principales du serveur **${message.guild.name}**.`)
-            .setColor("#00AAFF")
+            .setTitle(`🏠 ${guild.name}`)
+            .setColor("#5865F2")
             .addFields(
-                { name: "👑 Propriétaire (ID)", value: `\`${message.guild.ownerId}\``, inline: true },
-                { name: "🆔 ID du Serveur", value: `\`${message.guild.id}\``, inline: true }
+                { name: "👑 Propriétaire",  value: `<@${guild.ownerId}>`, inline: true },
+                { name: "👥 Membres",       value: `${(guild as any).memberCount ?? "?"}`, inline: true },
+                { name: "📢 Canaux",        value: `${channelCount}`,      inline: true },
+                { name: "🆔 ID Serveur",    value: `\`${guild.id}\``,      inline: false }
             )
-            .setFooter({ text: "BloumeChat Moderation" })
             .setTimestamp();
 
-        if (message.guild.icon) {
-            embed.setAuthor({ name: message.guild.name, iconUrl: message.guild.icon });
-        }
+        if (guild.icon) embed.setThumbnail(guild.icon);
 
-        await message.reply("", [embed]);
-    }
+        await message.reply({ embeds: [embed] });
+    },
 };
+
+export default command;

@@ -1,45 +1,56 @@
-import { Command } from "../types";
+import type { Command, CommandContext } from "../types";
 import { EmbedBuilder } from "bloumechat";
 
-export const command: Command = {
+const command: Command = {
     name: "suggest",
-    description: "Envoie une suggestion pour le serveur.",
-    async execute(client, message, args) {
-        const suggestion = args.join(" ");
+    description: "Soumet une suggestion au serveur (canal #suggestions automatique).",
+    aliases: ["suggestion", "idée"],
+    usage: "<message>",
+    examples: ["suggest Ajouter un salon musique", "suggest Bot pour les tickets de support"],
+    cooldown: 60,
+    guildOnly: true,
+    async execute({ client, message, args }: CommandContext) {
+        if (!message.serverId) return;
 
-        if (!suggestion) {
-            return message.reply("❌ Veuillez fournir une idée pour votre suggestion. Exemple : `!suggest Ajouter un salon musique`.");
+        if (args.length === 0) {
+            await message.reply("❌ Veuillez fournir une suggestion. Exemple : `!suggest Ajouter un salon musique`");
+            return;
         }
 
-        // Delete the original command message
-        try {
-            await message.delete();
-        } catch (e) {
-            // Might fail if the bot lacks MANAGE_MESSAGES permission
-        }
+        const text = args.join(" ").substring(0, 2_000);
 
         const embed = new EmbedBuilder()
-            .setTitle("💡 Nouvelle Suggestion")
-            .setDescription(suggestion)
-            .setColor("#FFD700") // Gold
+            .setTitle("💡 Nouvelle suggestion")
+            .setDescription(text)
+            .setColor("#57F287")
             .setAuthor({
-                name: message.author.username,
-                iconUrl: message.author.avatar || "https://bloumechat.com/logo.png"
+                name:    message.author.username,
+                iconUrl: message.author.avatar ?? undefined,
             })
-            .setFooter({ text: "Votez avec 👍 ou 👎 ci-dessous !" })
+            .setFooter({ text: "Votez avec 👍 ou 👎" })
             .setTimestamp();
 
-        // Send the beautiful embed
-        const suggestionMsg = await message.channel.send("", [embed]);
+        // Find a #suggestions channel, fall back to current channel
+        const suggestChannel = client.channels.cache.find(
+            c => c.serverId === message.serverId &&
+                 c.type === "TEXT" &&
+                 c.name?.toLowerCase().includes("suggest")
+        ) ?? message.channel;
 
-        // Automatically add reaction options
-        if (suggestionMsg) {
-            try {
-                await suggestionMsg.react("👍");
-                await suggestionMsg.react("👎");
-            } catch (e) {
-                console.warn("Failed to add reactions to the suggestion:", e);
-            }
+        const posted = await client.sendMessage(suggestChannel.id, { embeds: [embed] });
+
+        // Add vote reactions
+        await posted.react("👍").catch(() => {});
+        await posted.react("👎").catch(() => {});
+
+        // If we redirected to another channel, confirm
+        if (suggestChannel.id !== message.channelId) {
+            await message.reply(`✅ Votre suggestion a été envoyée dans <#${suggestChannel.id}> !`);
         }
-    }
+
+        // Clean up the command message
+        await message.delete().catch(() => {});
+    },
 };
+
+export default command;

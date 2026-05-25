@@ -1,45 +1,52 @@
-import { Command } from "../types";
+import type { Command, CommandContext } from "../types";
 import { EmbedBuilder } from "bloumechat";
 
-export const command: Command = {
+/** In-memory store: `guildId:userId` → list of warnings */
+const warnStore = new Map<string, Array<{ reason: string; moderator: string; at: number }>>();
+
+const command: Command = {
     name: "warn",
-    description: "Avertit un utilisateur pour une infraction.",
-    async execute(client, message, args) {
-        if (!message.guild) return message.reply("❌ Cette commande ne peut être utilisée que sur un serveur.");
+    description: "Avertit un membre du serveur. Les avertissements sont cumulatifs.",
+    aliases: ["avertir", "warning"],
+    usage: "<@utilisateur|id> [raison]",
+    examples: ["warn @User Langage inapproprié", "warn @User Spam"],
+    cooldown: 5,
+    guildOnly: true,
+    async execute({ message, args }: CommandContext) {
+        if (!message.serverId) return;
 
-        const targetId = args[0];
-        const reason = args.slice(1).join(" ") || "Aucune raison spécifiée";
-
-        if (!targetId) {
-            return message.reply("❌ Usage: `!warn [userPublicId] [raison]`");
+        if (!args[0]) {
+            await message.reply(`❌ Usage : \`!warn @utilisateur [raison]\``);
+            return;
         }
 
-        try {
-            // Dans un vrai bot, on stockerait ça en DB. 
-            // Ici on simule l'action avec un embed premium.
-            
-            const embed = new EmbedBuilder()
-                .setTitle("⚠️ Avertissement de Modération")
-                .setDescription(`Un utilisateur a été averti sur le serveur **${message.guild.name}**.`)
-                .setColor("#FFA500")
-                .addFields(
-                    { name: "👤 Utilisateur Cible", value: `<@${targetId}> (\`${targetId}\`)`, inline: true },
-                    { name: "🛡️ Modérateur", value: `<@${message.author.id}>`, inline: true },
-                    { name: "📝 Raison", value: reason, inline: false }
-                )
-                .setThumbnail("https://cdn-icons-png.flaticon.com/512/179/179386.png")
-                .setFooter({ text: "BloumeChat Safety System" })
-                .setTimestamp();
-
-            await message.channel.send("", [embed]);
-            
-            // On tente d'envoyer un MP à l'utilisateur (si l'API le permet via le client)
-            // Pour l'exemple, on se contente du log public.
-            
-            await message.reply(`✅ L'utilisateur <@${targetId}> a reçu un avertissement.`);
-            
-        } catch (e: any) {
-            await message.reply(`❌ Erreur lors de l'avertissement : ${e.message}`);
+        const userId = args[0].replace(/^<@!?/, "").replace(/>$/, "");
+        if (!userId) {
+            await message.reply("❌ Mention ou ID invalide.");
+            return;
         }
-    }
+
+        const reason = args.slice(1).join(" ") || "Aucune raison fournie";
+        const key    = `${message.serverId}:${userId}`;
+
+        if (!warnStore.has(key)) warnStore.set(key, []);
+        warnStore.get(key)!.push({ reason, moderator: message.author.id, at: Date.now() });
+
+        const count = warnStore.get(key)!.length;
+
+        const embed = new EmbedBuilder()
+            .setTitle("⚠️ Avertissement")
+            .setColor("#FFA500")
+            .addFields(
+                { name: "👤 Utilisateur",      value: `<@${userId}>`,               inline: true },
+                { name: "🛡️ Modérateur",       value: `<@${message.author.id}>`,    inline: true },
+                { name: "🔢 Avertissement n°", value: `${count}`,                   inline: true },
+                { name: "📝 Raison",            value: reason,                       inline: false }
+            )
+            .setTimestamp();
+
+        await message.reply({ embeds: [embed] });
+    },
 };
+
+export default command;

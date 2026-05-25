@@ -1,55 +1,48 @@
-import { Command } from "../types";
+import type { Command, CommandContext } from "../types";
 
-/**
- * Command to clear a specific number of messages.
- * @param client - The BloumeChat client instance.
- * @param message - The message object.
- * @param args - The arguments passed to the command.
- */
-export const command: Command = {
+const command: Command = {
     name: "clear",
-    description: "Clears a specific number of messages.",
-    async execute(client, message, args) {
-        const guild = message.guild;
-        if (!guild) return message.reply("❌ This command can only be used in a server.");
+    description: "Supprime un nombre de messages dans le canal actuel (max 100).",
+    aliases: ["purge", "prune", "delete"],
+    usage: "<1–100>",
+    examples: ["clear 10", "purge 50"],
+    cooldown: 10,
+    guildOnly: true,
+    async execute({ message, args }: CommandContext) {
+        const amount = parseInt(args[0] ?? "", 10);
 
-        const count = parseInt(args[0]);
-        if (isNaN(count) || count < 1 || count > 100) {
-            return message.reply("❌ Usage: `!clear [1-100]`");
-        }
-
-        let botMember = guild.members.cache.find((m: any) => m.user?.id === client.user?.id);
-        if (client.user && botMember) {
-            try {
-                botMember = await guild.members.fetch(guild.id, client.user.id);
-            } catch (e) {
-                console.error("Failed to refresh bot member:", e);
-            }
-
-            const MANAGE_MESSAGES = 1n << 8n;
-            const ADMINISTRATOR = 1n << 31n;
-            const isAdmin = (botMember.permissions & ADMINISTRATOR) === ADMINISTRATOR;
-            const hasPerm = (botMember.permissions & MANAGE_MESSAGES) === MANAGE_MESSAGES;
-
-            if (!isAdmin && !hasPerm) {
-                return message.reply(`❌ I do not have permission to delete messages.\nMissing: \`MANAGE_MESSAGES\``);
-            }
+        if (isNaN(amount) || amount < 1 || amount > 100) {
+            await message.reply("❌ Veuillez spécifier un nombre entre **1** et **100**.");
+            return;
         }
 
         try {
-            const messages = await message.channel.fetchMessages(count + 1);
-            const messageIds = messages.map((m: any) => m.publicId);
+            // Fetch messages then bulk-delete by their IDs
+            const fetched = await message.channel.fetchMessages(amount + 1); // +1 to include the command msg
+            const ids = fetched
+                .slice(0, amount + 1)
+                .map((m: any) => m.publicId ?? m.id)
+                .filter(Boolean) as string[];
 
-            await message.channel.bulkDelete(messageIds);
-            const reply = await message.channel.send(`✅ Deleted ${messageIds.length - 1} messages.`);
+            if (ids.length === 0) {
+                await message.reply("❌ Aucun message à supprimer.");
+                return;
+            }
 
-            setTimeout(() => {
-                reply.delete().catch(() => { });
-            }, 3000);
+            await message.channel.bulkDelete(ids);
 
-        } catch (error) {
-            console.error("Clear error:", error);
-            await message.reply("❌ Failed to delete messages.");
+            const confirm = await message.channel.send(
+                `✅ **${ids.length}** message(s) supprimé(s).`
+            );
+
+            // Auto-remove the confirmation after 5 s
+            setTimeout(async () => {
+                await confirm.delete().catch(() => {});
+            }, 5_000);
+        } catch {
+            await message.reply("❌ Impossible de supprimer les messages (permissions manquantes ?).");
         }
-    }
+    },
 };
+
+export default command;

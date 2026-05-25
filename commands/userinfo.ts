@@ -1,29 +1,60 @@
-import { Command } from "../types";
+import type { Command, CommandContext } from "../types";
 import { EmbedBuilder } from "bloumechat";
 
-export const command: Command = {
+const command: Command = {
     name: "userinfo",
-    description: "Affiche les informations d'un utilisateur.",
-    async execute(client, message, args) {
-        const target = message.author; // For now just the author, could be expanded to args[0]
+    description: "Affiche les informations d'un utilisateur (vous par défaut).",
+    aliases: ["whois", "ui", "user"],
+    usage: "[@utilisateur|id]",
+    examples: ["userinfo", "userinfo @User", "userinfo abc123"],
+    cooldown: 5,
+    async execute({ client, message, args }: CommandContext) {
+        let userId: string;
 
-        const embed = new EmbedBuilder()
-            .setTitle(`👤 Infos de l'utilisateur : ${target.username}`)
-            .setColor("#1ABC9C")
-            .addFields(
-                { name: "Nom d'utilisateur", value: target.username, inline: true },
-                { name: "Tag", value: `#${target.tag}`, inline: true },
-                { name: "ID", value: `\`${target.id}\``, inline: false },
-                { name: "Bot ?", value: target.bot ? "🤖 Oui" : "👤 Non", inline: true },
-                { name: "Statut Actuel", value: target.status, inline: true }
-            )
-            .setFooter({ text: "BloumeChat Moderation" })
-            .setTimestamp();
-
-        if (target.avatar) {
-            embed.setAuthor({ name: target.username, iconUrl: target.avatar });
+        if (args[0]) {
+            userId = args[0].replace(/^<@!?/, "").replace(/>$/, "");
+        } else {
+            userId = message.author.id;
         }
 
-        await message.reply("", [embed]);
-    }
+        if (!userId) {
+            await message.reply("❌ ID ou mention invalide.");
+            return;
+        }
+
+        // Try cache first, then API
+        let user = client.users.cache.get(userId);
+        if (!user) {
+            try {
+                user = await client.users.fetch(userId);
+            } catch {
+                await message.reply("❌ Utilisateur introuvable.");
+                return;
+            }
+        }
+
+        const statusLabels: Record<string, string> = {
+            online:    "🟢 En ligne",
+            idle:      "🌙 Inactif",
+            dnd:       "🔴 Ne pas déranger",
+            invisible: "⚫ Invisible",
+            offline:   "⚫ Hors ligne",
+        };
+
+        const embed = new EmbedBuilder()
+            .setTitle(`👤 ${user.username}#${user.tag}`)
+            .setColor("#1ABC9C")
+            .addFields(
+                { name: "🆔 ID",          value: `\`${user.id}\``,                         inline: true  },
+                { name: "🤖 Bot",         value: user.bot ? "Oui" : "Non",                 inline: true  },
+                { name: "📶 Statut",      value: statusLabels[user.status] ?? user.status, inline: true  }
+            )
+            .setTimestamp();
+
+        if (user.avatar) embed.setThumbnail(user.avatar);
+
+        await message.reply({ embeds: [embed] });
+    },
 };
+
+export default command;
