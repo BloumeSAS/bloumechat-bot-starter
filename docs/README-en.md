@@ -69,12 +69,11 @@ The client fires the following events during lifecycle operations:
 | `messageUpdate` | Fired when a message is edited. | `message: Message` |
 | `messageDelete` | Fired when a message is deleted. | `data: { id: string }` |
 | `messageReactionAdd` | Fired when an emoji reaction is added. | `data: Object` |
-| `memberAdd` | Fired when a new user joins a guild. | `data: Object` |
-| `memberUpdate` | Fired when a member's properties change (roles, nickname). | `data: Object` |
-| `memberRemove` | Fired when a user leaves or is kicked/banned. | `data: Object` |
-| `channelCreate` | Fired when a new channel is created. | `data: Object` |
-| `channelUpdate` | Fired when a channel's settings change. | `data: Object` |
-| `channelDelete` | Fired when a channel is removed. | `data: { id: string }` |
+| `guildMemberAdd` | Fired when a new user joins a guild. | `data: Object` |
+| `guildMemberUpdate` | Fired when a member's properties change (roles, nickname). | `data: Object` |
+| `guildMemberRemove` | Fired when a user leaves or is kicked/banned. | `data: Object` |
+| `guildChannelsUpdate` | Fired when the channel list changes (creation, deletion, etc.). | `data: Object` |
+| `guildCategoriesUpdate` | Fired when the category list changes. | `data: Object` |
 | `presenceUpdate` | Fired when a user's Online/Offline status changes. | `data: Object` |
 | `disconnect` | Fired if the bot gets disconnected from the server. | `reason: string` |
 | `error` | Fired for internal API/WebSocket errors. | `error: any` |
