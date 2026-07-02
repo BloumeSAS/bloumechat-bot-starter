@@ -69,12 +69,11 @@ Le client émet plusieurs événements :
 | `messageUpdate` | Déclenché lorsqu'un message existant est modifié. | `message: Message` |
 | `messageDelete` | Déclenché lorsqu'un message est supprimé. | `data: { id: string }` |
 | `messageReactionAdd` | Déclenché lorsqu'une réaction est ajoutée. | `data: Object` |
-| `memberAdd` | Déclenché lorsqu'un nouvel utilisateur rejoint un serveur. | `data: Object` |
-| `memberUpdate` | Déclenché lorsqu'un membre d'un serveur est mis à jour (rôles, pseudo). | `data: Object` |
-| `memberRemove` | Déclenché lorsqu'un utilisateur quitte ou est expulsé d'un serveur. | `data: Object` |
-| `channelCreate` | Déclenché lors de la création d'un salon. | `data: Object` |
-| `channelUpdate` | Déclenché lors de la modification d'un salon. | `data: Object` |
-| `channelDelete` | Déclenché lors de la suppression d'un salon. | `data: { id: string }` |
+| `guildMemberAdd` | Déclenché lorsqu'un nouvel utilisateur rejoint un serveur. | `data: Object` |
+| `guildMemberUpdate` | Déclenché lorsqu'un membre d'un serveur est mis à jour (rôles, pseudo). | `data: Object` |
+| `guildMemberRemove` | Déclenché lorsqu'un utilisateur quitte ou est expulsé d'un serveur. | `data: Object` |
+| `guildChannelsUpdate` | Déclenché lors de la modification de la liste des salons (création, suppression, etc.). | `data: Object` |
+| `guildCategoriesUpdate` | Déclenché lors de la modification de la liste des catégories. | `data: Object` |
 | `presenceUpdate` | Déclenché lorsque le statut "En ligne/Hors ligne" d'un membre change. | `data: Object` |
 | `disconnect` | Déclenché si la connexion au serveur WebSocket est perdue. | `reason: string` |
 | `error` | Déclenché lors d'erreurs de connexion ou d'exécution d'API. | `error: any` |
