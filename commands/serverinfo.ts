@@ -25,7 +25,7 @@ const command: Command = {
             .setColor("#5865F2")
             .addFields(
                 { name: "👑 Propriétaire",  value: `<@${guild.ownerId}>`, inline: true },
-                { name: "👥 Membres",       value: `${(guild as any).memberCount ?? "?"}`, inline: true },
+                { name: "👥 Membres",       value: `${guild.memberCount ?? "?"}`, inline: true },
                 { name: "📢 Canaux",        value: `${channelCount}`,      inline: true },
                 { name: "🆔 ID Serveur",    value: `\`${guild.id}\``,      inline: false }
             )
