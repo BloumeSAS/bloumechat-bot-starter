@@ -21,7 +21,7 @@ const command: Command = {
                 { name: "🟢 Node.js",     value: process.version,                 inline: true },
                 {
                     name: "⏱ Uptime",
-                    value: (client as any).uptime != null ? formatUptime((client as any).uptime as number) : "—",
+                    value: client.uptime != null ? formatUptime(client.uptime) : "—",
                     inline: true,
                 }
             )
