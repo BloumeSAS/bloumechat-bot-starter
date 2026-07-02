@@ -11,8 +11,7 @@ const event: BotEvent = {
 
         await client.setStatus("online").catch(() => { /* non-fatal */ });
 
-        // Once the SDK >= 2.0 is published, you can use:
-        // await client.setActivity({ type: "using", name: "BloumeChat" })
+        await client.setActivity({ type: "playing", name: "BloumeChat" }).catch(() => { /* non-fatal */ });
     },
 };
 
