@@ -11,7 +11,7 @@ const command: Command = {
         const tmp = await message.reply("🏓 Calcul de la latence…");
         const latency = Date.now() - start;
 
-        const rawUptime: number | null = (client as any).uptime ?? null;
+        const rawUptime = client.uptime;
         const uptimeStr = rawUptime !== null ? ` · Uptime : \`${formatUptime(rawUptime)}\`` : "";
 
         await tmp.edit(`🏓 **Pong !** Latence : \`${latency}ms\`${uptimeStr}`);
