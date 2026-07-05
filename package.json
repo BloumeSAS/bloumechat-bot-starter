@@ -10,7 +10,7 @@
         "start:prod": "node dist/index.js"
     },
     "dependencies": {
-        "bloumechat": "^1.6.0",
+        "bloumechat": "^2.0.0",
         "dotenv": "^17.3.1"
     },
     "devDependencies": {
