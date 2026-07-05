@@ -49,7 +49,8 @@ bloumechatbotexemple/
 │   ├── ready.ts          ← Connexion confirmée, présence initiale
 │   ├── messageCreate.ts  ← Dispatcher de commandes (alias, cooldowns, guildOnly)
 │   ├── automod.ts        ← Automodération (mots interdits, liens, caps)
-│   ├── guildMemberAdd.ts ← Message de bienvenue
+│   ├── guildCreate.ts    ← Log lorsque le bot rejoint un nouveau serveur
+│   ├── guildMemberAdd.ts ← Log d'arrivée d'un membre
 │   └── guildMemberRemove.ts ← Log de départ
 └── commands/
     ├── help.ts           ← Liste des commandes / aide détaillée

@@ -69,7 +69,8 @@ The client fires the following events during lifecycle operations:
 | `messageUpdate` | Fired when a message is edited. | `message: Message` |
 | `messageDelete` | Fired when a message is deleted. | `data: { id: string }` |
 | `messageReactionAdd` | Fired when an emoji reaction is added. | `data: Object` |
-| `guildMemberAdd` | Fired when a new user joins a guild. | `data: Object` |
+| `guildCreate` | Fired when the bot is added to a new server. | `guild: Guild` |
+| `guildMemberAdd` | Fired when a new user joins a guild. | `member: Member` |
 | `guildMemberUpdate` | Fired when a member's properties change (roles, nickname). | `data: Object` |
 | `guildMemberRemove` | Fired when a user leaves or is kicked/banned. | `data: Object` |
 | `guildChannelsUpdate` | Fired when the channel list changes (creation, deletion, etc.). | `data: Object` |

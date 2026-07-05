@@ -69,7 +69,8 @@ Le client émet plusieurs événements :
 | `messageUpdate` | Déclenché lorsqu'un message existant est modifié. | `message: Message` |
 | `messageDelete` | Déclenché lorsqu'un message est supprimé. | `data: { id: string }` |
 | `messageReactionAdd` | Déclenché lorsqu'une réaction est ajoutée. | `data: Object` |
-| `guildMemberAdd` | Déclenché lorsqu'un nouvel utilisateur rejoint un serveur. | `data: Object` |
+| `guildCreate` | Déclenché lorsque le bot est ajouté à un nouveau serveur. | `guild: Guild` |
+| `guildMemberAdd` | Déclenché lorsqu'un nouvel utilisateur rejoint un serveur. | `member: Member` |
 | `guildMemberUpdate` | Déclenché lorsqu'un membre d'un serveur est mis à jour (rôles, pseudo). | `data: Object` |
 | `guildMemberRemove` | Déclenché lorsqu'un utilisateur quitte ou est expulsé d'un serveur. | `data: Object` |
 | `guildChannelsUpdate` | Déclenché lors de la modification de la liste des salons (création, suppression, etc.). | `data: Object` |
