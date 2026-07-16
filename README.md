@@ -65,8 +65,15 @@ bloumechatbotexemple/
     ├── embed.ts          ← Envoyer un embed personnalisé
     ├── poll.ts           ← Créer un sondage avec réactions
     ├── suggest.ts        ← Soumettre une suggestion
-    └── say.ts            ← Faire parler le bot
+    ├── say.ts            ← Faire parler le bot
+    ├── join.ts           ← Rejoindre un salon vocal
+    ├── play.ts           ← Jouer une piste audio (rejoint automatiquement)
+    ├── pause.ts          ← Mettre en pause / reprendre la lecture
+    ├── stop.ts           ← Arrêter la lecture
+    └── leave.ts          ← Quitter le salon vocal
 ```
+
+> **⚠️ FFmpeg requis pour les commandes vocales** — `play.ts` décode l'audio via **FFmpeg** : installez-le sur la machine qui exécute le bot ([ffmpeg.org/download.html](https://ffmpeg.org/download.html)), ou ajoutez le paquet npm `ffmpeg-static` à ce projet. Voir le guide **[Salons vocaux](https://dev.bloume.chat/guide/voice)** de la documentation du SDK pour le détail.
 
 ---
 
