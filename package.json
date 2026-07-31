@@ -10,7 +10,7 @@
         "start:prod": "node dist/index.js"
     },
     "dependencies": {
-        "bloumechat": "^2.1.0",
+        "bloumechat": "^3.0.0",
         "dotenv": "^17.3.1"
     },
     "devDependencies": {
@@ -27,6 +27,6 @@
     "author": "BloumeChat Team",
     "license": "MIT",
     "engines": {
-        "node": ">=18.0.0"
+        "node": ">=20"
     }
 }
