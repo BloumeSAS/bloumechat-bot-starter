@@ -1,6 +1,6 @@
 {
   "name": "bloumechat-bot-exemple",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Template de bot BloumeChat — TypeScript strict, commandes modulaires, cooldowns, automod",
   "main": "index.ts",
   "scripts": {
