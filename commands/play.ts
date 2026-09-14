@@ -17,9 +17,14 @@ const command: Command = {
         let connection = client.voice.connection;
         if (!connection) {
             const guild = message.guild;
-            const voiceChannel = guild?.channels.find(c => c.type === "VOICE");
+            // Prefer the invoking user's current voice channel (client.voiceStates,
+            // bloumechat SDK >= 4.1.0) over just grabbing the first one in the server.
+            const authorChannelId = client.voiceStates.cache.get(message.author.id)?.channelId;
+            const voiceChannel = authorChannelId
+                ? guild?.channels.find(c => c.id === authorChannelId)
+                : guild?.channels.find(c => c.type === "VOICE");
             if (!voiceChannel) {
-                await message.reply("❌ Aucun salon vocal trouvé — utilisez `!join` d'abord si besoin.");
+                await message.reply("❌ Aucun salon vocal trouvé — rejoignez-en un, ou utilisez `!join` d'abord si besoin.");
                 return;
             }
             try {
