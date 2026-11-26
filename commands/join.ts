@@ -1,4 +1,4 @@
-import type { Command, CommandContext } from "../types";
+﻿import type { Command, CommandContext } from "../types";
 
 const command: Command = {
     name: "join",
@@ -15,7 +15,7 @@ const command: Command = {
         const wanted = args.join(" ").toLowerCase();
 
         // No channel name given: prefer the one the invoking user is
-        // currently in (client.voiceStates, bloumechat SDK >= 4.1.0) over
+        // currently in (client.voiceStates, @bloume/chat SDK >= 4.1.0) over
         // "just pick the first voice channel" — matches how music bots are
         // expected to behave. Falls back to "first voice channel" if we
         // don't have a voice state for them (e.g. they joined voice before
