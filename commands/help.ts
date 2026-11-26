@@ -1,4 +1,4 @@
-﻿import type { Command, CommandContext } from "../types";
+import type { Command, CommandContext } from "../types";
 import { commands, config } from "../index";
 import { EmbedBuilder } from "@bloume/chat";
 
