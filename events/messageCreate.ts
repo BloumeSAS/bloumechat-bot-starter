@@ -1,4 +1,4 @@
-import type { BloumeChat, Message } from "bloumechat";
+﻿import type { BloumeChat, Message } from "@bloume/chat";
 import type { BotEvent } from "../types";
 import { commands, aliases, cooldowns, config } from "../index";
 import { logger } from "../util/logger";
