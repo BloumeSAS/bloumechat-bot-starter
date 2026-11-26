@@ -1,7 +1,7 @@
-import "dotenv/config";
+﻿import "dotenv/config";
 import { readdirSync } from "fs";
 import { join } from "path";
-import { BloumeChat } from "bloumechat";
+import { BloumeChat } from "@bloume/chat";
 import type { Command, BotConfig } from "./types";
 import { CooldownManager } from "./util/cooldown";
 import { logger } from "./util/logger";
