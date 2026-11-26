@@ -1,4 +1,4 @@
-﻿import type { Command, CommandContext } from "../types";
+import type { Command, CommandContext } from "../types";
 import { EmbedBuilder } from "@bloume/chat";
 
 /** In-memory store: `guildId:userId` → list of warnings */
