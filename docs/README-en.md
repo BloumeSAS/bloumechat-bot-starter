@@ -1,6 +1,6 @@
-# 📚 BloumeChat SDK - Comprehensive Documentation
+﻿# 📚 BloumeChat SDK - Comprehensive Documentation
 
-Welcome to the full documentation for the **[bloumechat](https://www.npmjs.com/package/bloumechat)** SDK.  
+Welcome to the full documentation for the **[@bloume/chat](https://www.npmjs.com/package/@bloume/chat)** SDK.  
 This is the official framework to interact with the BloumeChat API, manage servers, channels, permissions, and listen to real-time events through WebSockets.
 
 ---
@@ -10,9 +10,9 @@ This is the official framework to interact with the BloumeChat API, manage serve
 Install the SDK via NPM or Yarn:
 
 ```bash
-npm install bloumechat
+npm install @bloume/chat
 # or
-yarn add bloumechat
+yarn add @bloume/chat
 ```
 
 ---
@@ -22,7 +22,7 @@ yarn add bloumechat
 Here is a minimal snippet to connect your bot:
 
 ```typescript
-import { BloumeChat } from "bloumechat";
+import { BloumeChat } from "@bloume/chat";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -48,9 +48,9 @@ client.login(process.env.BLOUMECHAT_TOKEN);
 
 ---
 
-## 📡 The Client (`BloumeChat`)
+## 📡 The Client (`@bloume/chat`)
 
-The heart of the SDK is `BloumeChat`. It extends the standard Node.js `EventEmitter`.
+The heart of the SDK is `@bloume/chat`. It extends the standard Node.js `EventEmitter`.
 
 ### Methods
 - `login(token: string)`: Initializes the WebSocket connection and authenticates the bot.
@@ -141,7 +141,7 @@ BloumeChat resolves permissions natively through **Bitwise Masks (`BigInt`)**.
 The SDK exports `PermissionFlags` with all known permissions:
 
 ```typescript
-import { PermissionFlags } from "bloumechat";
+import { PermissionFlags } from "@bloume/chat";
 
 console.log(PermissionFlags.MANAGE_SERVER); // Retrieves the administrative flag value
 ```
@@ -179,7 +179,7 @@ await message.guild.createChannel({
 Helps in formatting aesthetic message blocks.
 
 ```typescript
-import { EmbedBuilder } from "bloumechat";
+import { EmbedBuilder } from "@bloume/chat";
 
 const myEmbed = new EmbedBuilder()
     .setTitle("🌟 SDK Tutorial")
@@ -199,7 +199,7 @@ This repository comes with a fully functional example bot built with the BloumeC
 
 ### `index.ts` (Bot Core)
 This is the application's entry point.
-- Initializes the `BloumeChat` client.
+- Initializes the `@bloume/chat` client.
 - **Dynamically** loads all commands from the `commands/` directory into a `Map`.
 - **Dynamically** loads all events from the `events/` directory.
 - Logs into BloumeChat using the Token defined in the `.env` file (`process.env.BLOUMECHAT_TOKEN`).
