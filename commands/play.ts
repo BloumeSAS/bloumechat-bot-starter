@@ -1,4 +1,4 @@
-﻿import type { Command, CommandContext } from "../types";
+import type { Command, CommandContext } from "../types";
 
 const command: Command = {
     name: "play",
