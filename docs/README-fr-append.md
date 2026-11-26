@@ -1,4 +1,4 @@
-﻿
+
 ---
 
 ## 🤖 Structure du Bot d'Exemple
