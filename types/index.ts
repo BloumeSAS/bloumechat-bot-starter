@@ -1,4 +1,4 @@
-import type { BloumeChat, Message } from "bloumechat";
+﻿import type { BloumeChat, Message } from "@bloume/chat";
 
 /**
  * Context passed to every command's execute function.
