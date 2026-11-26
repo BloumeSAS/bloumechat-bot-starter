@@ -1,4 +1,4 @@
-import type { Command, CommandContext } from "../types";
+﻿import type { Command, CommandContext } from "../types";
 
 const command: Command = {
     name: "play",
@@ -18,7 +18,7 @@ const command: Command = {
         if (!connection) {
             const guild = message.guild;
             // Prefer the invoking user's current voice channel (client.voiceStates,
-            // bloumechat SDK >= 4.1.0) over just grabbing the first one in the server.
+            // @bloume/chat SDK >= 4.1.0) over just grabbing the first one in the server.
             const authorChannelId = client.voiceStates.cache.get(message.author.id)?.channelId;
             const voiceChannel = authorChannelId
                 ? guild?.channels.find(c => c.id === authorChannelId)
