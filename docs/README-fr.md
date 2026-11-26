@@ -1,6 +1,6 @@
-# 📚 BloumeChat SDK - Documentation Complète
+﻿# 📚 BloumeChat SDK - Documentation Complète
 
-Bienvenue dans la documentation complète du SDK **[bloumechat](https://www.npmjs.com/package/bloumechat)**.  
+Bienvenue dans la documentation complète du SDK **[@bloume/chat](https://www.npmjs.com/package/@bloume/chat)**.  
 Ce SDK est l'outil officiel pour interagir avec l'API BloumeChat, gérer vos serveurs, vos canaux, vos permissions et écouter les événements en temps réel via des WebSockets.
 
 ---
@@ -10,9 +10,9 @@ Ce SDK est l'outil officiel pour interagir avec l'API BloumeChat, gérer vos ser
 Pour installer le SDK, utilisez NPM ou Yarn :
 
 ```bash
-npm install bloumechat
+npm install @bloume/chat
 # ou
-yarn add bloumechat
+yarn add @bloume/chat
 ```
 
 ---
@@ -22,7 +22,7 @@ yarn add bloumechat
 Voici un exemple minimal pour connecter votre bot :
 
 ```typescript
-import { BloumeChat } from "bloumechat";
+import { BloumeChat } from "@bloume/chat";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -48,9 +48,9 @@ client.login(process.env.BLOUMECHAT_TOKEN);
 
 ---
 
-## 📡 Le Client (`BloumeChat`)
+## 📡 Le Client (`@bloume/chat`)
 
-La classe principale du SDK est `BloumeChat`. Elle étend un `EventEmitter` standard.
+La classe principale du SDK est `@bloume/chat`. Elle étend un `EventEmitter` standard.
 
 ### Méthodes
 - `login(token: string)`: Initialise la connexion WebSocket avec BloumeChat en utilisant le Token d'authentification du Bot.
@@ -143,7 +143,7 @@ Le système de permissions de BloumeChat fonctionne en **Masque de Bits (Bitmask
 Le SDK fournit un enum utile contenant toutes les permissions brutes du serveur :
 
 ```typescript
-import { PermissionFlags } from "bloumechat";
+import { PermissionFlags } from "@bloume/chat";
 
 console.log(PermissionFlags.MANAGE_SERVER); // Affiche la valeur de l'accès Administrateur Serveur
 ```
@@ -180,7 +180,7 @@ await message.guild.createChannel({
 Construit des messages visuellement enrichis (Embeds) à insérer dans des actions `reply()` ou `send()`.
 
 ```typescript
-import { EmbedBuilder } from "bloumechat";
+import { EmbedBuilder } from "@bloume/chat";
 
 const monEmbed = new EmbedBuilder()
     .setTitle("🌟 Bienvenue dans la doc")
@@ -200,7 +200,7 @@ Le dossier de ce projet contient un bot Discord-like entièrement fonctionnel cr
 
 ### `index.ts` (Cœur du Bot)
 C'est le point d'entrée de l'application.
-- Il initialise le client `BloumeChat`.
+- Il initialise le client `@bloume/chat`.
 - Il charge **dynamiquement** toutes les commandes depuis le dossier `commands/` dans une `Map`.
 - Il charge **dynamiquement** tous les événements depuis le dossier `events/`.
 - Il se connecte à BloumeChat en utilisant le Token défini dans le fichier `.env` (`process.env.BLOUMECHAT_TOKEN`).
