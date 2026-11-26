@@ -1,4 +1,4 @@
-﻿<p align="center">
+<p align="center">
   <img src="https://cdn.bloume.chat/favicon.ico" alt="BloumeChat Logo" width="150"/>
 </p>
 
