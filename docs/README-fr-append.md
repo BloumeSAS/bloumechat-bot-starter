@@ -1,4 +1,4 @@
-
+﻿
 ---
 
 ## 🤖 Structure du Bot d'Exemple
@@ -7,7 +7,7 @@ Le dossier de ce projet contient un bot Discord-like entièrement fonctionnel cr
 
 ### `index.ts` (Cœur du Bot)
 C'est le point d'entrée de l'application.
-- Il initialise le client `BloumeChat`.
+- Il initialise le client `@bloume/chat`.
 - Il charge **dynamiquement** toutes les commandes depuis le dossier `commands/` dans une `Map`.
 - Il charge **dynamiquement** tous les événements depuis le dossier `events/`.
 - Il se connecte à BloumeChat en utilisant le Token défini dans le fichier `.env` (`process.env.BLOUMECHAT_TOKEN`).
