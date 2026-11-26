@@ -1,11 +1,11 @@
-<p align="center">
+﻿<p align="center">
   <img src="https://cdn.bloume.chat/favicon.ico" alt="BloumeChat Logo" width="150"/>
 </p>
 
 <h1 align="center">BloumeChat Bot Template v2</h1>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/bloumechat"><img src="https://img.shields.io/npm/v/bloumechat.svg" alt="NPM Version" /></a>
+  <a href="https://www.npmjs.com/package/@bloume/chat"><img src="https://img.shields.io/npm/v/@bloume/chat.svg" alt="NPM Version" /></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
   <a href="https://bloumechat.com/developers"><img src="https://img.shields.io/badge/Portal-Développeurs-5865F2.svg" alt="Dev Portal" /></a>
 </p>
@@ -135,7 +135,7 @@ export default event;
 
 ## 📖 Documentation SDK
 
-La documentation complète du SDK `bloumechat` est disponible dans le dossier [`docs/`](./docs/).
+La documentation complète du SDK `@bloume/chat` est disponible dans le dossier [`docs/`](./docs/).
 
 * 🇫🇷 [Documentation en Français](./docs/README-fr.md)
 * 🇬🇧 [Documentation in English](./docs/README-en.md)
