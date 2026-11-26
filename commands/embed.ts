@@ -1,5 +1,5 @@
-import type { Command, CommandContext } from "../types";
-import { EmbedBuilder } from "bloumechat";
+﻿import type { Command, CommandContext } from "../types";
+import { EmbedBuilder } from "@bloume/chat";
 
 const command: Command = {
     name: "embed",
