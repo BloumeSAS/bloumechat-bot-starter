@@ -1,4 +1,4 @@
-﻿import type { BloumeChat, Message } from "@bloume/chat";
+import type { BloumeChat, Message } from "@bloume/chat";
 import type { BotEvent } from "../types";
 import { EmbedBuilder } from "@bloume/chat";
 import { logger } from "../util/logger";
