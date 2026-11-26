@@ -1,4 +1,4 @@
-import type { BloumeChat } from "bloumechat";
+﻿import type { BloumeChat } from "@bloume/chat";
 import type { BotEvent } from "../types";
 import { logger } from "../util/logger";
 
