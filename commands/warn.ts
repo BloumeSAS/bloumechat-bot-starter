@@ -1,5 +1,5 @@
-import type { Command, CommandContext } from "../types";
-import { EmbedBuilder } from "bloumechat";
+﻿import type { Command, CommandContext } from "../types";
+import { EmbedBuilder } from "@bloume/chat";
 
 /** In-memory store: `guildId:userId` → list of warnings */
 const warnStore = new Map<string, Array<{ reason: string; moderator: string; at: number }>>();
