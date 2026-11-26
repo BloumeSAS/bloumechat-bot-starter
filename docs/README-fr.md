@@ -1,4 +1,4 @@
-﻿# 📚 BloumeChat SDK - Documentation Complète
+# 📚 BloumeChat SDK - Documentation Complète
 
 Bienvenue dans la documentation complète du SDK **[@bloume/chat](https://www.npmjs.com/package/@bloume/chat)**.  
 Ce SDK est l'outil officiel pour interagir avec l'API BloumeChat, gérer vos serveurs, vos canaux, vos permissions et écouter les événements en temps réel via des WebSockets.
