@@ -1,6 +1,6 @@
-import type { Command, CommandContext } from "../types";
+﻿import type { Command, CommandContext } from "../types";
 import { commands, config } from "../index";
-import { EmbedBuilder } from "bloumechat";
+import { EmbedBuilder } from "@bloume/chat";
 
 const command: Command = {
     name: "help",
